@@ -1,7 +1,7 @@
-````markdown
-# Memento-AI-Skill (数字镜像)
 
-```text
+Memento-AI-Skill (数字镜像)
+
+
 =================================================
   __  __                               _        
  |  \/  | ___ _ __ ___   ___ _ __ | |_ ___  
@@ -11,8 +11,7 @@
                                             
        A I - S K I L L   D I S T I L L E R
 =================================================
-"Distilling Memories, Reconnecting Souls."
-````
+``To live in hearts we leave behind is not to die.``
 
 ## 🕯️ 项目愿景 (Global Vision)
 
