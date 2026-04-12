@@ -105,7 +105,7 @@ python 1_distill.py -i data/sample_chat.txt -n mom -img photo1.jpg photo2.png
   - **UI/UX 优化**: 提升网页端的视觉舒适度与交互温度。
 
 > *“逝者未亡，存乎心念。
-"The departed are never truly gone, for they dwell within our hearts."”*
+The departed are never truly gone, for they dwell within our hearts.”*
 
 -----
 
