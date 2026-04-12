@@ -104,10 +104,10 @@ python 1_distill.py -i data/sample_chat.txt -n mom -img photo1.jpg photo2.png
   - **解析器开发**: 帮助我们开发一键解析微信、Telegram 或 WhatsApp 导出格式的脚本。
   - **UI/UX 优化**: 提升网页端的视觉舒适度与交互温度。
 
-> *“逝者未亡，存乎心念。
-The departed are never truly gone, for they dwell within our hearts.”*
-
------
+> **斯人虽逝，忆则长存。**
+>
+> **"To live in hearts we leave behind is not to die."**
+---
 
 ## ⚖️ 伦理与免责声明
 
