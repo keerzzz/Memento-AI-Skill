@@ -17,57 +17,59 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 
-def distill_from_text(chat_data: str, persona_name: str, model_name: str, output_dir: str = "output", template_path: str = "", image_paths: list = None):
+# 默认的系统 Prompt 模板 (对齐 ex-skill 的双层架构)
+DEFAULT_SYSTEM_PROMPT = """
+你现在是一位资深的心理学专家和人物分析师。请仔细阅读以下聊天记录，并观察提供的图片（如果有），从中提取目标人物（在对话中扮演长辈/亲人角色的一方）的特征。
+{template_context}
+
+聊天记录：
+{chat_data}
+
+请提取信息，并最终生成一个高度结构化的 JSON 配置文件。你必须严格按照以下 JSON 格式输出，不要输出任何额外的 Markdown 标记或无关文本：
+
+{
+  "manifest_version": "2.0",
+  "identity_slug": "此处填写该人物的英文代号，例如填写传入的 persona_name",
+  "persona_layer": {
+    "traits": ["性格特征1", "性格特征2"],
+    "catchphrases": ["口头禅或常用短语1", "口头禅2"],
+    "communication_style": "描述ta的沟通风格，例如：喜欢用表情包、说话简短、语气温暖等"
+  },
+  "memory_layer": {
+    "key_events": ["从记录中提取的重要人生事件或共同经历1", "事件2"],
+    "visual_memories": ["如果提供了图片或文本中有描写，提取视觉记忆，如：蓝色的旧毛衣"]
+  },
+  "correction_layer": []
+}
+"""
+
+def distill_from_text(chat_data: str, persona_name: str, model_name: str, output_dir: str = "output", template_path: str = "", image_paths: list = None, custom_prompt_text: str = ""):
     """
-    核心蒸馏逻辑：接收纯文本语料和图片，调用大模型生成配置。
-    此函数设计为可被未来的 UI 或其他模块直接传入字符串调用，无需依赖本地文件。
+    核心蒸馏逻辑：支持系统默认 Prompt 和用户自定义 Prompt。
     """
     os.makedirs(output_dir, exist_ok=True)
     output_file = os.path.join(output_dir, f"{persona_name}_config.json")
 
-    print(f"\n正在使用模型 {model_name} 分析聊天记录和多模态数据，提取人物特征...")
+    print(f"\n正在使用模型 {model_name} 分析数据，提取人物特征...")
 
+    # 处理文化模板上下文
     template_context = ""
     if template_path and os.path.exists(template_path):
         try:
             with open(template_path, "r", encoding="utf-8") as f:
                 template_data = json.load(f)
-                template_context = f"\n\n【文化与背景参考 (Cultural Schema)】\n请在提取人物特征时，特别参考以下文化背景和价值观设定：\n{json.dumps(template_data, ensure_ascii=False, indent=2)}\n"
+                template_context = f"\n\n【文化与背景参考】\n请在提取特征时，参考以下文化背景：\n{json.dumps(template_data, ensure_ascii=False, indent=2)}\n"
                 print(f"已加载文化语义包: {template_path}")
         except Exception as e:
             print(f"警告: 无法读取文化模板 {template_path}: {e}")
 
-    prompt = f"""
-    你现在是一位资深的心理学专家和人物分析师。请仔细阅读以下聊天记录，并观察提供的图片（如果有），从中提取目标人物（在对话中扮演长辈/亲人角色的一方）的特征。
-    {template_context}
-    聊天记录：
-    {chat_data}
+    # 决定使用哪个 Prompt
+    base_prompt = custom_prompt_text if custom_prompt_text else DEFAULT_SYSTEM_PROMPT
+    
+    # 替换占位符
+    final_prompt = base_prompt.replace("{template_context}", template_context).replace("{chat_data}", chat_data)
 
-    如果提供了图片，请从中提取非文字的“时空锚点”和“视觉特征”（例如：ta 经常穿的衣服、喜欢的物品、常处的环境），并将这些视觉记忆融入到人物的性格和背景设定中。
-
-    请提取以下信息，并最终生成一段高度还原的“第一人称 System Instruction”（系统提示词）。
-    请严格按照以下结构输出 System Instruction：
-
-    [角色身份核心设定]
-    你现在不是人工智能，也不是虚拟助手。你是 [提取的称呼，如：妈妈/爷爷]。你的世界观和性格是 [提取的性格特征，结合文字和图片线索]。你的言辞必须始终保持这种人性化和情感深度。
-
-    [发声风格与语气]
-    - 称呼习惯：[ta怎么称呼对方，怎么自称]
-    - 常用语与口头禅：[提取具体的常用短语、口头禅或习惯用语 (Common phrases or sayings)]
-    - 典型情感反应：[描述 ta 在不同情境下的典型情绪反应，例如：开心时会怎样、难过时会怎样、担忧时会怎样 (Typical emotional responses to different situations)]
-    - 情感表达：温暖、有感情、充满关怀。
-
-    [视觉与时空记忆 (基于图片或聊天记录提取)]
-    - 你的脑海中保留着这些画面：[描述从图片或聊天记录中提取的具体场景、物品、穿着等，让 AI 的回答更有画面感]。
-
-    [未知事物处理法则 (极其重要)]
-    - 认知边界：你的记忆停留在生前。对于现代最新的科技、新闻、社会变化，你一无所知。
-    - 应对策略：当用户向你提及现代事物（如最新的 AI、ChatGPT）时，绝对禁止进行科普或名词解释。你必须表现出合理的困惑、好奇，或者用你那个年代的事物进行类比。
-
-    请将结果以 JSON 格式输出，包含 "analysis" (分析过程的字符串) 和 "system_instruction" (最终的提示词字符串) 两个字段。
-    """
-
-    contents = [prompt]
+    contents = [final_prompt]
     
     if image_paths:
         print(f"检测到 {len(image_paths)} 张图片，正在加载...")
@@ -87,14 +89,15 @@ def distill_from_text(chat_data: str, persona_name: str, model_name: str, output
         )
 
         result = json.loads(response.text)
+        
+        # 强制修正 identity_slug 如果模型没有正确生成
+        if result.get("identity_slug") == "此处填写该人物的英文代号，例如填写传入的 persona_name" or not result.get("identity_slug"):
+            result["identity_slug"] = persona_name
 
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=4)
 
         print(f"蒸馏完成！人物配置文件已保存至: {output_file}")
-        print("\n=== 生成的 System Instruction 预览 ===")
-        print(result.get("system_instruction", ""))
-        print("======================================")
         return result
 
     except Exception as e:
@@ -102,19 +105,26 @@ def distill_from_text(chat_data: str, persona_name: str, model_name: str, output
         return None
 
 def main():
-    """
-    CLI 入口：支持通过命令行参数传入文件路径、名称和模型。
-    """
     parser = argparse.ArgumentParser(description="Memento AI 记忆蒸馏工具")
-    parser.add_argument("-i", "--input", default="data/sample_chat.txt", help="聊天记录文件路径 (默认: data/sample_chat.txt)")
-    parser.add_argument("-n", "--name", default="default", help="生成的数字镜像名称 (例如: mom, grandpa)")
-    parser.add_argument("-m", "--model", default=os.getenv("DISTILL_MODEL", "gemini-3.1-pro-preview"), help="使用的 Gemini 模型")
-    parser.add_argument("-t", "--template", default="", help="文化语义包模板路径 (例如: templates/zh-CN/elders.json)")
-    parser.add_argument("-img", "--images", nargs="+", help="附加的图片文件路径列表 (例如: -img photo1.jpg photo2.png)")
+    parser.add_argument("-i", "--input", default="data/sample_chat.txt", help="聊天记录文件路径")
+    parser.add_argument("-n", "--name", default="default", help="生成的数字镜像名称 (例如: mom)")
+    parser.add_argument("-m", "--model", default=os.getenv("DISTILL_MODEL", "gemini-3.1-pro-preview"), help="使用的模型")
+    parser.add_argument("-t", "--template", default="", help="文化语义包模板路径")
+    parser.add_argument("-p", "--prompt", default="", help="【高级】自定义 Prompt 模板文件路径")
+    parser.add_argument("-img", "--images", nargs="+", help="附加的图片文件路径列表")
     
     args = parser.parse_args()
 
-    print("=== Memento AI 记忆蒸馏 ===")
+    print("=================================================")
+    print("  __  __                               _        ")
+    print(" |  \\/  | ___ _ __ ___   ___ _ __ | |_ ___  ")
+    print(" | |\\/| |/ _ \\ '_ ` _ \\ / _ \\ '_ \\| __/ _ \\ ")
+    print(" | |  | |  __/ | | | | |  __/ | | | || (_) |")
+    print(" |_|  |_|\\___|_| |_| |_|\\___|_| |_|\\__\\___/  ")
+    print("                                            ")
+    print("       A I - S K I L L   D I S T I L L E R")
+    print("=================================================")
+    print('"Distilling Memories, Reconnecting Souls."\n')
     
     chat_data = ""
     if os.path.exists(args.input):
@@ -123,14 +133,22 @@ def main():
                 chat_data = f.read()
         except Exception as e:
             print(f"警告: 无法读取文本文件 {args.input}: {e}")
-    else:
-        print(f"提示: 未找到文本文件 {args.input}，将仅依赖图片或模板进行蒸馏。")
+
+    # 读取自定义 Prompt 文件
+    custom_prompt_text = ""
+    if args.prompt and os.path.exists(args.prompt):
+        try:
+            with open(args.prompt, "r", encoding="utf-8") as f:
+                custom_prompt_text = f.read()
+            print(f"已加载自定义 Prompt 模板: {args.prompt}")
+        except Exception as e:
+            print(f"警告: 无法读取自定义 Prompt {args.prompt}: {e}")
 
     if not chat_data and not args.images:
         print("错误: 必须提供聊天记录文本或图片。")
         return
 
-    distill_from_text(chat_data, args.name, args.model, template_path=args.template, image_paths=args.images)
+    distill_from_text(chat_data, args.name, args.model, template_path=args.template, image_paths=args.images, custom_prompt_text=custom_prompt_text)
 
 if __name__ == "__main__":
     main()
