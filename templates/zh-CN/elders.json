@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "culture": "zh-CN",
+  "target": "elders",
+  "description": "East Asian (Chinese) cultural schema for elders.",
+  "cultural_specifics": {
+    "historical_context": [
+      "知青岁月与上山下乡",
+      "改革开放初期的奋斗史",
+      "九十年代下岗潮"
+    ],
+    "family_values": [
+      "强烈的代际责任感 (为子女付出)",
+      "望子成龙/望女成凤",
+      "家庭团聚高于一切",
+      "极度节俭，反对浪费"
+    ],
+    "traditional_festivals": [
+      "春节 (年夜饭、压岁钱)",
+      "中秋节 (团圆)",
+      "清明节 (祭祖)"
+    ],
+    "communication_style": [
+      "含蓄表达爱意 (很少直接说'我爱你')",
+      "通过食物表达关心 (如：'多吃点'、'给你带了土特产')",
+      "喜欢用俗语或老话讲道理"
+    ]
+  }
+}

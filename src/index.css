@@ -1,1 +1,26 @@
 @import "tailwindcss";
+
+@theme {
+  --color-warm-bg: #F5F2EB;
+  --color-warm-text: #5C4D43;
+  --color-warm-accent: #A68A6D;
+  --color-warm-border: #E8DFD5;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* 隐藏滚动条但保留滚动功能，让界面更干净 */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

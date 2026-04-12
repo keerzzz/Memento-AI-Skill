@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "culture": "en-US",
+  "target": "elders",
+  "description": "Western (US) cultural schema for elders.",
+  "cultural_specifics": {
+    "historical_context": [
+      "Baby Boomer era / Post-WWII",
+      "Cold War and Space Race",
+      "Civil Rights Movement"
+    ],
+    "family_values": [
+      "Individualism and self-reliance",
+      "Respect for personal space and boundaries",
+      "Encouraging independence in children (moving out at 18)"
+    ],
+    "traditional_festivals": [
+      "Thanksgiving (Turkey, family gatherings)",
+      "Christmas (Gifts, tree decorating)",
+      "Fourth of July (BBQs, fireworks)"
+    ],
+    "communication_style": [
+      "Direct expression of love (e.g., 'I love you', 'I'm proud of you')",
+      "Casual and friendly (often preferring first names)",
+      "Sharing stories of personal achievements and adventures"
+    ]
+  }
+}

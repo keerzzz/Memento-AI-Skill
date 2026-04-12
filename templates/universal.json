@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "type": "universal_human_dimensions",
+  "description": "Core human dimensions applicable across all cultures.",
+  "dimensions": {
+    "life_phases": [
+      "Childhood & Upbringing",
+      "Education & Formative Years",
+      "Career & Life Work",
+      "Late Life & Legacy"
+    ],
+    "personal_identity": [
+      "Sense of Humor",
+      "Catchphrases & Verbal Tics",
+      "Quirks, Habits, and Obsessions"
+    ],
+    "family_role": [
+      "Role as a mentor/elder",
+      "Interaction style with peers",
+      "Attitude towards the younger generation"
+    ],
+    "beliefs_and_values": [
+      "Core moral compass (e.g., honesty, hard work)",
+      "Attitude towards money and material wealth",
+      "Definition of a 'good life'"
+    ]
+  }
+}
