@@ -1,11 +1,58 @@
-<div align="center">
+# Memento-AI-Skill (数字镜像)
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+## 项目愿景
+在漫长的岁月里，总有一些声音我们渴望再次听见，总有一些关怀我们希望永远停留。
 
-  <h1>Built with AI Studio</h2>
+**Memento-AI-Skill** 是一个开源的轻量级工具，旨在通过大语言模型（LLM）技术，从过往的聊天记录中“蒸馏”出已故亲人的性格特征、说话习惯和核心价值观。
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+它不仅是一个代码项目，更是一座连接思念的桥梁。我们希望通过这个工具，为你构建一个温暖的“数字镜像”，在那些需要倾诉、需要安慰的时刻，让你能再次感受到那份熟悉的陪伴与力量。
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+科技的终极意义，在于赋予岁月以温度。
 
-</div>
+---
+
+## 功能特性
+- **数据蒸馏**: 自动分析聊天记录，提取人物画像（口头禅、性格、价值观）。
+- **人格生成**: 自动生成高度还原的第一人称 System Prompt。
+- **沉浸式对话**: 提供极简的 CLI 交互界面，实现温暖、有感情的实时对话。
+- **轻量级**: 仅依赖原生 Google Generative AI SDK，无需复杂的框架。
+
+---
+
+## 快速上手 (Quick Start)
+
+### 1. 环境准备
+确保你的系统已安装 Python 3.8+。
+克隆本项目后，安装依赖：
+```bash
+pip install -r requirements.txt
+```
+
+### 2. 配置 API Key
+复制 `.env.example` 文件并重命名为 `.env`，填入你的 Google Gemini API Key：
+```env
+GEMINI_API_KEY="your_api_key_here"
+```
+
+### 3. 准备数据
+在 `data/sample_chat.txt` 中放入你想要提取的聊天记录（纯文本格式，UTF-8 编码）。你可以参考现有的示例格式。
+
+### 4. 提取人物特征 (蒸馏)
+运行蒸馏脚本，AI 将分析聊天记录并生成人物配置文件：
+```bash
+python 1_distill.py
+```
+*成功后，会在 `output/` 目录下生成 `persona_config.json`，其中包含了提取出的 System Instruction。*
+
+### 5. 开始对话
+运行对话脚本，与“数字镜像”进行交流：
+```bash
+python 2_chat_cli.py
+```
+
+---
+
+## 注意事项
+- 本项目仅供个人缅怀与情感慰藉使用，请妥善保护您的隐私数据。
+- 聊天记录越丰富，提取的人格越真实。
+- 建议使用 Gemini 1.5 Pro 进行蒸馏（推理能力更强），使用 Gemini 1.5 Flash 进行对话（响应速度更快）。

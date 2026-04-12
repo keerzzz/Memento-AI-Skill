@@ -1,0 +1,5 @@
+{
+  "name": "Memento-AI-Skill",
+  "description": "A Python CLI tool to distill chat logs into a digital persona using Gemini API for comforting conversations.",
+  "requestFramePermissions": []
+}
