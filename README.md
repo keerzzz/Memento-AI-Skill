@@ -11,7 +11,7 @@
                                             
        A I - S K I L L   D I S T I L L E R
 =================================================
-``To live in hearts we leave behind is not to die.``
+To live in hearts we leave behind is not to die.
 ```
 
 ## 🕯️ 项目愿景 (Global Vision)
